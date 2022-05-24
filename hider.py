@@ -1,9 +1,9 @@
 from PIL import Image
 from unidecode import unidecode
+import click
 import math
-import sys
 
-OUTPUT_FILE_NAME = "outfile.png"
+
 
 def change_last_digit(number: int, last_digit: int|str) -> int:
     """
@@ -49,8 +49,18 @@ str
 
     return number
 
-def create_image(filename: str, text: str) -> None:
-    image = Image.open(filename)
+
+@click.command()
+@click.option("-i", "--imagefile", prompt="Path to the image", help="Path to the image file")
+@click.option("-t", "--text", prompt="Text (or textfile) to hide", help="Enter here the text that you need to hide, arounded by double-quote (\"). If it is a textfile, give the path to it")
+@click.option("-o", "--output", help="Name of the output file", default="output.png", show_default=True)
+@click.option("--textfile", help="is textfile or no", is_flag=True)
+def create_image(imagefile: str, text: str, output: str, textfile: bool=False) -> None:
+    try:
+        image = Image.open(imagefile)
+    except FileNotFoundError:
+        print(f"The file {imagefile} doesn't exist")
+        exit()
     pixels = list(image.getdata())
     width, height = image.size
 
@@ -64,11 +74,18 @@ def create_image(filename: str, text: str) -> None:
             new_first_pixel.append(new_color)
         pixels[0] = tuple(new_first_pixel)
 
+        if textfile:
+            try:
+                with open(text) as file:
+                    text = file.read()
+            except FileNotFoundError:
+                print(f"The textfile {text} doesn't exist")
+                exit()
+
         word_distance = len(pixels) / len(text)
         word_distance = math.floor(word_distance)
         word_distance = min(999, word_distance)
         word_distance = add_zeros(word_distance)
-        print(word_distance)
 
         second_pixel = pixels[1]
         
@@ -109,10 +126,8 @@ def create_image(filename: str, text: str) -> None:
         
         new_image = Image.new("RGB", (width, height))
         new_image.putdata(new_pixels)
-        print(new_pixels[0])
-        new_image.save(OUTPUT_FILE_NAME)
+        
+        new_image.save(output)
 
 if __name__ == '__main__':
-    image_file = sys.argv[1]
-    text = sys.argv[2]
-    create_image(image_file, text)
+    create_image()
