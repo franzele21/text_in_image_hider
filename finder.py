@@ -4,7 +4,10 @@ from PIL import Image
 def get_last_character(pixel):
     return str(pixel[0])[-1] + str(pixel[1])[-1] + str(pixel[2])[-1]
 
-image = Image.open("outfile.png")
+
+image = Image.open("output.png")
+
+
 pixels = list(image.getdata())
 
 first_pixel = pixels[0]
