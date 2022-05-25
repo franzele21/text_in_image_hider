@@ -4,7 +4,6 @@ import click
 import math
 
 
-
 def change_last_digit(number: int, last_digit: int|str) -> int:
     """
 This function changes the last digit of a number, and keep it less 
@@ -61,6 +60,8 @@ def create_image(imagefile: str, text: str, output: str, textfile: bool=False) -
     except FileNotFoundError:
         print(f"The file {imagefile} doesn't exist")
         exit()
+def create_image(filename: str, text: str) -> None:
+    image = Image.open(filename)
     pixels = list(image.getdata())
     width, height = image.size
 
@@ -82,10 +83,14 @@ def create_image(imagefile: str, text: str, output: str, textfile: bool=False) -
                 print(f"The textfile {text} doesn't exist")
                 exit()
 
+
         word_distance = len(pixels) / len(text)
         word_distance = math.floor(word_distance)
         word_distance = min(999, word_distance)
         word_distance = add_zeros(word_distance)
+
+        print(word_distance)
+
 
         second_pixel = pixels[1]
         
@@ -131,3 +136,5 @@ def create_image(imagefile: str, text: str, output: str, textfile: bool=False) -
 
 if __name__ == '__main__':
     create_image()
+
+
